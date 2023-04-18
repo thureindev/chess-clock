@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+  <html lang="en">
+    <head>
+        
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!--Let browser know website is optimized for mobile-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <title>Chess Clock - thureindev</title>
+
+        <!--Import Google Icon Font-->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <!-- Import Google Symbols -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,700,0,0" />
+        <!-- Compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+        <nav>
+            <div class="nav-wrapper">
+                <a href="https://thureindev.github.io" target="_blank" class="brand-logo left">thureindev</a>
+
+                <ul id="nav-mobile" class="right">
+                    <li><a href="#" target="_blank">Themes</a></li>
+                    <li><a href="#" target="_blank">About</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="fullscreen">
+            <div class="row">
+
+                <div class="col s12 control-bar">
+                    <button class="btn-floating btn-large waves-effect waves-light teal volume-button"><i class="material-icons">volume_up</i></button>
+                    <button class="btn-floating btn-large waves-effect waves-light teal play-pause-button"><i class="material-icons">pause</i></button>
+                    <button class="btn-floating btn-large waves-effect waves-light teal settings-button"><i class="material-icons">timer</i></button>
+                </div>
+                
+                <button id="clock-1" class="col s6 waves-effect waves-light btn clock-button">5:00<span>.0</span></button>
+                <button id="clock-2" class="col s6 waves-effect waves-light btn clock-button">5:00<span>.0</span></button>
+                
+            </div>
+        </div>
+
+
+        <!-- Compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+        <!-- jquery -->
+        <script src="https://code.jquery.com/jquery-3.6.4.slim.min.js" integrity="sha256-a2yjHM4jnF9f54xUQakjZGaqYs/V1CYvWpoqZzC2/Bw=" crossorigin="anonymous"></script>
+        
+        <!-- custom js files -->
+        <script>
+            function include(file) {
+            
+                var script = document.createElement('script');
+                script.src = file;
+                script.type = 'text/javascript';
+                script.defer = true;
+                
+                //!IMPORTANT  NEED ASYNC AWAIT HERE!
+                document.getElementsByTagName('head').item(0).appendChild(script);
+            }
+            
+            /* Include Many js files */ //  include order is important
+            include('Clock.js');
+            include('app.js');
+        </script>
+
+    </body>
+  </html>

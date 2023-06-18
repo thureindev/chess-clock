@@ -7,12 +7,33 @@ const PLAY_PAUSE_SELECTOR = '.play-pause-button';
 const VOLUME_SELECTOR = '.volume-button';
 const SETTINGS_SELECTOR = '.settings-button';
 
+const POP_UP = '.pop-up-interface';
+const INFO_TEXT = '.info-text';
+const COVER_BACKDROP = '.cover-backdrop';
+
+const BTN_UPDATE_TIMERS = '#btn-update-timers';
+
+
+const C1_MINS = '#c-1-minutes';
+const C1_SECONDS = '#c-1-seconds';
+const C1_INCRE = '#c-1-increment';
+
+const C2_MINS = '#c-2-minutes';
+const C2_SECONDS = '#c-2-seconds';
+const C2_INCRE = '#c-2-increment';
+
+const WHITE_CLOCK = '.white-clock';
+
+
 let c_times = {
     c_1: 90000,
     c_2: 90000
 }
 
 // MAIN --------------------------------
+
+// add click event listeners
+
 $(document).ready(() => {
 
     // add event listeners
@@ -22,6 +43,10 @@ $(document).ready(() => {
     $(PLAY_PAUSE_SELECTOR).on('click', play_pause_clicked);
     $(VOLUME_SELECTOR).on('click', volume_clicked);
     $(SETTINGS_SELECTOR).on('click', settings_clicked);
+
+    $(COVER_BACKDROP).on('click', hide_pop_up_interface);
+
+    $(BTN_UPDATE_TIMERS).on('click', update_timers);
     // --- --- --- ---
 
     CLOCK.reset(c_times.c_1, c_times.c_2)
@@ -34,9 +59,9 @@ $(document).ready(() => {
 
 // DISPLAY UPDATE FUNCS --------------------------
 // --------------------------------- // ---------------------------------
-const update_clock_tick = (clock_selector, time_in_msec) => {
+const update_clock_tick = (clock_selector, time_left_in_msec) => {
 
-    $(clock_selector).html(format_time(time_in_msec));
+    $(clock_selector).html(format_time(time_left_in_msec));
 
     if (CLOCK.state === State.GAMEOVER) {        
         update_display_gameover(clock_selector);
@@ -187,7 +212,7 @@ const format_time = (time_in_msec) => {
 }
 
 const process_clock_btn_click = (c_1, c_2) => {
-        
+
     const isTicking = CLOCK.state === State.TICKING;
     const isReady = CLOCK.state === State.READY;
 
@@ -206,7 +231,7 @@ const process_clock_btn_click = (c_1, c_2) => {
             $(c_1).addClass('white-clock').removeClass('black-clock');
             $(c_2).addClass('black-clock').removeClass('white-clock');
 
-            reset_clockObj_timers(c_1, c_times.c_1, c_times.c_2);
+            change_times(c_1, c_times.c_1, c_times.c_2);
 
             CLOCK.start(update_clock_tick, c_1);
             
@@ -228,37 +253,38 @@ const process_clock_btn_click = (c_1, c_2) => {
 }
 
 //  //  set timer funcs
-const set_timers = () => {
+const update_timers = () => { 
     
-    clock_1 = prompt('ENTER CLOCK 1 timer IN SECONDS');
+    let c1_min = Number($(C1_MINS)[0].value);
+    let c1_sec = Number($(C1_SECONDS)[0].value);
+    let c1_incre = Number($(C1_INCRE)[0].value);
 
-    if (Number(clock_1)) {
-        c_times.c_1 = Number(clock_1) * 1000;
-        
-        clock_2 = prompt('ENTER CLOCK 2 timer IN SECONDS');
+    let c2_min = Number($(C2_MINS)[0].value);
+    let c2_sec = Number($(C2_SECONDS)[0].value);
+    let c2_incre = Number($(C2_INCRE)[0].value);
 
-        if (Number(clock_2)) {
-            c_times.c_2 = Number(clock_2) * 1000;
-            
-            $(CLOCK_1_SELECTOR).html(format_time(c_times.c_1));
-            $(CLOCK_2_SELECTOR).html(format_time(c_times.c_2));
-        }
-        else {
-            alert('INVALID INPUT');
-        }
-    }
-    else {
-        alert('INVALID INPUT');
-    }
+    // change to milli seconds
+    let c1_time = ((c1_min * 60) + c1_sec) * 1000;
+    let c2_time = ((c2_min * 60) + c2_sec) * 1000;
+
+    console.log(c1_min + ':' + c1_sec);
+    console.log(c2_min + ':' + c2_sec);
+
+    console.log(c1_time);
+    console.log(c2_time);
+
+
+    c_times.c_1 = c1_time;
+    c_times.c_2 = c2_time;
 }
 // -------------------------------
-const reset_clockObj_timers = (selector, c_1, c_2) => {
+const change_times = () => {
     
-    if ($(selector).attr('id') == 'clock-1') {
-        CLOCK.reset_timers_only(c_1, c_2);
+    if ($(WHITE_CLOCK).attr('id') == 'clock-1') {
+        CLOCK.set_timers(c_times.c_1, c_times.c_2);
     }
-    else if ($(selector).attr('id') == 'clock-2') {
-        CLOCK.reset_timers_only(c_2, c_1);
+    else if ($(WHITE_CLOCK).attr('id') == 'clock-2') {
+        CLOCK.set_timers(c_times.c_2, c_times.c_1);
     }
     else {
         alert('clock id errors.');
@@ -289,7 +315,7 @@ const play_pause_clicked = () => {
         update_display_game_resumed();
     }
     else if (CLOCK.state === State.READY) {
-        alert('BLACK, PRESS YOUR CLOCK TO START THE GAME');
+        show_pop_up_interface();
     }
     else if (CLOCK.state === State.GAMEOVER) {
         // TO FIX CLOCK RESET TIMER
@@ -312,13 +338,33 @@ const settings_clicked = () => {
 
     // will only work in game ready or game paused state
 
-    if (CLOCK.state === State.READY) {
-        set_timers();
+    if (CLOCK.state === State.READY || CLOCK.state === State.PAUSED) {
+        show_pop_up_interface('clock-settings');
     }
-    else if (CLOCK.state === State.PAUSED) {
-        set_timers();
-        
-        reset_clockObj_timers('.white-clock', c_times.c_1, c_times.c_2);
+}
+
+const show_pop_up_interface = (pass="start") => {
+    
+    $(POP_UP).removeClass('hide');
+    $(INFO_TEXT).removeClass('hide');
+    $(COVER_BACKDROP).removeClass('hide');
+
+    if (pass == "start") {
+        $(INFO_TEXT)[0].innerHTML = "When both players are ready, black hits their button prior to white's first move, thus starting the clock on white's end.";
     }
+    else if (pass == "clock-settings") {
+        $(INFO_TEXT)[0].innerHTML = "Clock Settings";
+        $('.interface-container').removeClass('hide');
+    }
+    else {
+        $(INFO_TEXT)[0].innerHTML = "ERROR!!";
+    }
+}
+
+const hide_pop_up_interface = () => {
+
+    $(POP_UP).addClass('hide').children().addClass('hide');
+    
+    $(COVER_BACKDROP).addClass('hide');
 }
 // ---------- ---------------

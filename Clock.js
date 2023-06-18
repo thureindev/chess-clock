@@ -108,7 +108,7 @@ class Clock {
         clearInterval(this.interval);
     }
 
-    reset_timers_only(t_1, t_2) {
+    set_timers(t_1, t_2) {
         this.white_status.time = t_1;
         this.black_status.time = t_2;
     }

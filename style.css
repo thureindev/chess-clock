@@ -113,3 +113,97 @@ nav {
 .faded {
     background-color: cornflowerblue !important;
 }
+
+.hide {
+    display: none;
+}
+
+.pop-up-interface {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    background-color: antiquewhite;
+
+    border-radius: 18px;
+    padding: 10px 15px;
+
+    z-index: 100;
+}
+.pop-up-interface .info-text {
+    font-size: 16pt;
+    text-align: center;
+}
+
+.cover-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    background-color: rgba(148, 148, 148, 0.7);
+    backdrop-filter: blur(10px);
+
+    z-index: 99;
+}
+
+.interface-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    flex-direction: column;
+
+    padding: 10px 15px;
+
+    text-align: left;
+}
+
+.interface-container div {
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+
+    /* flex-wrap: wrap; */
+    flex-direction: row;
+}
+
+
+.timer-container .timer-interface:first-child {
+    
+    border-right: 1px #009688 solid;
+    
+}
+.timer-interface {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-direction: column !important;
+    
+    margin: 10px 0;
+    padding: 0 10px;
+}
+
+.settings-panel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-direction: row;
+}
+.btn-panel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-direction: row;
+
+    margin: 18px 0;
+}
+
+label {
+    color: #009688;
+}

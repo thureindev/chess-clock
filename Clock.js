@@ -74,7 +74,7 @@ class Clock {
 
                     clearInterval(this.tickingFunction);
                 }
-                
+
                 viewUpdateCallBack(viewSelector, this.tickingClock.time);
 
             }, TEN_MILLI_SEC); // Ten instead of One milli sec used for performance and accracy wise
@@ -114,7 +114,7 @@ class Clock {
         }
     }
 
-    reset(t_1=300000, t_2=300000) {
+    reset(t_1=DEFAULT_TIMES.c_1, t_2=DEFAULT_TIMES.c_2) {
 
         clearInterval(this.tickingFunction);
         this.tickingClock = null

@@ -39,11 +39,12 @@ class Controller {
             // ### todo create assign clock-colors function in VIEW obj and use it here.
             else if (isReady) {
     
+                // assign white clock, black clock
                 $(c_1).addClass('white-clock').removeClass('black-clock');
                 $(c_2).addClass('black-clock').removeClass('white-clock');
+                this.update_clock_sides();
     
-                this.change_times(c_1, DEFAULT_TIMES.c_1, DEFAULT_TIMES.c_2);
-    
+                // start the clock
                 this.clock.start(this.view.update_clock_tick, c_1);
                 
                 // view selector updates
@@ -59,14 +60,14 @@ class Controller {
                 this.view.fade_nav();
             }
             
-            // view visual update on going game
+            // disable the switched btn and visual update
             $(c_2).addClass('disabled');
             $(c_1).removeClass('disabled');
         }
     }
     
-    update_timers () { 
-        
+    update_timers () {
+
         let c1_min = Number($(C1_MINS)[0].value);
         let c1_sec = Number($(C1_SECONDS)[0].value);
         // let c1_incre = Number($(C1_INCRE)[0].value);
@@ -74,9 +75,9 @@ class Controller {
         // change to milli seconds
         let c1_time = ((c1_min * 60) + c1_sec) * 1000;
         // set to timer
-        c_times.c_1 = c1_time;
+        this.c_times.c_1 = c1_time;
 
-        if (isDiffTimers) {
+        if (this.isDiffTimers) {
             let c2_min = Number($(C2_MINS)[0].value);
             let c2_sec = Number($(C2_SECONDS)[0].value);
             // let c2_incre = Number($(C2_INCRE)[0].value);
@@ -84,17 +85,23 @@ class Controller {
             // change to milli seconds
             let c2_time = ((c2_min * 60) + c2_sec) * 1000;
             // set to timer
-            c_times.c_2 = c2_time;
+            this.c_times.c_2 = c2_time;
         }
         else {
             // set to timer
-            c_times.c_2 = c1_time;
+            this.c_times.c_2 = c1_time;
         }
+            
+        // update data to clock model
+        this.clock.set_timers(this.c_times.c_1, this.c_times.c_2);
+        // update view
+        this.view.update_timer_texts(this.c_times.c_1, this.c_times.c_2);
+        
     }
 
     // -------------------------------
-    change_times () {
-        
+    update_clock_sides () {
+
         if ($(WHITE_CLOCK).attr('id') == 'clock-1') {
             this.clock.set_timers(this.c_times.c_1, this.c_times.c_2);
         }
@@ -184,23 +191,32 @@ class Controller {
     toggle_2nd_timer () {
         
         if ($(SECOND_TIMER).hasClass('hide')) {
-            isDiffTimers = true;
+            this.isDiffTimers = true;
             $(SECOND_TIMER).removeClass('hide');
         }
         else {
-            isDiffTimers = false;
+            this.isDiffTimers = false;
             $(SECOND_TIMER).addClass('hide');
         }
     }
 
     reset_default_clock_settings () {
-        // reset clock timers
-        this.clock.reset(this.c_times.c_1, this.c_times.c_2)
+        
+        // set to default times
+        this.c_times.c_1 = DEFAULT_TIMES.c_1;
+        this.c_times.c_2 = DEFAULT_TIMES.c_2;
+
+        // update html inputs
+        $(C1_MINS)[0].value = 5;
+        $(C2_MINS)[0].value = 5;
+        $(C1_SECONDS)[0].value = 0;
+        $(C2_SECONDS)[0].value = 0;
+
 
         // reset differt clocks toggle
         $(BTN_TOGGLE_SECOND_TIMER).prop('checked', false);
+        this.isDiffTimers = false
         
-
         // ### todo reset time methods
         
     }

@@ -35,8 +35,16 @@ $(document).ready(() => {
 
     $(COVER_BACKDROP).on('click', () => CONTROLLER.hide_pop_up_interface());
 
-    $(BTN_UPDATE_TIMERS).on('click', () => CONTROLLER.update_timers());
-    $(BTN_RESET_DEFAULT).on('click', () => console.log('reset to implement'));
+    $(BTN_UPDATE_TIMERS).on('click', () => {
+        CONTROLLER.update_timers();
+
+        CONTROLLER.hide_pop_up_interface();
+    });
+
+    $(BTN_RESET_DEFAULT).on('click', () => {
+        CONTROLLER.reset_default_clock_settings();
+    });
+
     $(BTN_CLOSE_POP_UP).on('click', () => CONTROLLER.hide_pop_up_interface());
     // --- --- --- ---
 
@@ -44,6 +52,8 @@ $(document).ready(() => {
 
     
     CONTROLLER.reset_default_clock_settings();
+    
+    CLOCK.reset()
 
     VIEW.update_display_game_reset();
 

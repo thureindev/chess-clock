@@ -19,13 +19,21 @@ class View {
         this.settings_button = SETTINGS_SELECTOR;
     }
 
-    update_clock_tick = (clock_selector, time_left_in_msec) => {
+    update_clock_tick (clock_selector, time_left_in_msec) {
 
         $(clock_selector).html(format_time(time_left_in_msec));
     
-        if (CLOCK.state === GameState.GAMEOVER) {        
+        if (CLOCK.state === GameState.GAMEOVER) {
             this.update_display_gameover(clock_selector);
         }
+    }
+
+    update_timer_texts (c_1, c_2) {
+        
+
+        $('#clock-1')[0].innerHTML = format_time(c_1);
+
+        $('#clock-2')[0].innerHTML = format_time(c_2);
     }
     
     update_display_game_reset () {

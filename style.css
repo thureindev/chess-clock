@@ -170,10 +170,20 @@ nav {
     flex-direction: row;
 }
 
+.timer-container {
+    
+    
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
 
+    /* flex-wrap: wrap; */
+    flex-direction: column !important;
+
+}
 .timer-container .timer-interface:first-child {
     
-    border-right: 1px #009688 solid;
+    /* border-right: 1px #009688 solid; */
     
 }
 .timer-interface {
@@ -181,7 +191,7 @@ nav {
     justify-content: center;
     align-items: center;
 
-    flex-direction: column !important;
+    flex-direction: row !important;
     
     margin: 10px 0;
     padding: 0 10px;
@@ -206,4 +216,11 @@ nav {
 
 label {
     color: #009688;
+}
+
+.time-input {
+    color: #009688;
+    text-align: center;
+
+    /* max-width: 20px; */
 }

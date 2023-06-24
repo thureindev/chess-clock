@@ -1,18 +1,19 @@
 // ENUMS
 // -------------
-const State = Object.freeze({
+const GameState = Object.freeze({
   READY: 0,
   TICKING: 1,
   PAUSED: 2,
   GAMEOVER: 3
 });
 // -------------
-const PlayerTurn = Object.freeze({
-  White: 0,
-  Black: 1
+const TurnState = Object.freeze({
+  WHITE: 0,
+  BLACK: 1
 });
 // -------------
 
+// constants
 const TEN_MILLI_SEC = 10;
 
 // Class 
@@ -20,97 +21,145 @@ const TEN_MILLI_SEC = 10;
 class Clock {
 
     constructor() {
-        this.state = State.READY; // initial state
-        this.playerTurn = PlayerTurn.White; // p1 starts the game 
+        this.state = GameState.READY; // initial state
+        this.playerTurn = TurnState.WHITE; // p1 starts the game 
 
-        this.white_status = {
-            time: 1801, // starting time in milli seconds
-            move: 0, // number of moves made by player 1
+        this.white_clock = {
+            time: 300000, // starting time in milli seconds
+            move: 0, // number of moves played
 
-            increment: 0
+            increment: 0 // increment seconds in milli seconds
         };
-        this.black_status = {
-            time: 62000, // starting time in milli seconds
-            move: 0, // number of moves made by player 2
+        this.black_clock = {
+            time: 300000, // starting time in milli seconds
+            move: 0, // number of moves played
             
-            increment: 0
+            increment: 0 // increment seconds in milli seconds
         };
 
-        this.interval = null; // setInterval variable
+        this.tickingClock = null; // to keep track of ticking clock on turns
+
+        this.tickingFunction = null; // to keep global setInterval function to this obj
     }
 
     start(viewUpdateCallBack, viewSelector) {
 
-        if (this.state === State.READY) {
-            this.state = State.TICKING;
+        // GameState.READY is a state where the game started from reset
+        // or the game resumed from paused
+        if (this.state === GameState.READY) {
+            
+            // if tickingClock is null, the game started from reset
+            // Thus white becomes tickingClock
+            if (this.tickingClock === null) {
+                this.tickingClock = this.white_clock;
+            }
+
+            // Ready game should start ticking to carry on ticking process
+            this.state = GameState.TICKING;
         }
 
-        if (this.state === State.TICKING) {
+        // Start the clock
+        if (this.state === GameState.TICKING) {
 
-            this.interval = setInterval(() => {
-                const currentPlayer = this.playerTurn === PlayerTurn.White ? this.white_status : this.black_status;
-                currentPlayer.time -= TEN_MILLI_SEC;
+            // Use JS global [setInterval] func to tick every ten milli seconds ### lookup [setInterval] to understand how it works
+            this.tickingFunction = setInterval(() => {
+                // consume current player's clock
+                this.tickingClock.time -= TEN_MILLI_SEC;
 
-                if (currentPlayer.time < TEN_MILLI_SEC) {
-                    this.state = State.GAMEOVER;
-                    clearInterval(this.interval);
+                // check gameover status
+                if (this.tickingClock.time < TEN_MILLI_SEC) {
+                    this.tickingClock.time = 0;
+
+                    this.state = GameState.GAMEOVER;
+
+                    clearInterval(this.tickingFunction);
                 }
                 
-                viewUpdateCallBack(viewSelector, currentPlayer.time);
+                viewUpdateCallBack(viewSelector, this.tickingClock.time);
 
             }, TEN_MILLI_SEC); // Ten instead of One milli sec used for performance and accracy wise
         }
     }
 
-    pause() {
-        if (this.state === State.TICKING) {
-            this.state = State.PAUSED;
+    switchTurn(viewUpdateCallBack, viewSelector) {
+        /*** switchTurn only happens while game is ongoing */
+        if (this.state === GameState.TICKING) {
 
-            clearInterval(this.interval);
+            // stop previous [setInterval] process 
+            clearInterval(this.tickingFunction);
+
+            // Update moves and calculate increment
+            this.tickingClock.move++;
+
+            // ### implement increment here -------------------------------------
+
+            if (this.playerTurn === TurnState.WHITE) {
+                this.playerTurn = TurnState.BLACK;
+                this.tickingClock = this.black_clock;
+                
+                console.log('BLACK to play');
+            }
+            else if (this.playerTurn === TurnState.BLACK) {
+                this.playerTurn = TurnState.WHITE;
+                this.tickingClock = this.white_clock;
+
+                console.log('WHITE to play');
+            }
+            else {
+                console.log('Error occured in determining player state');
+            }
+
+            // start a new [setInterval] process
+            this.start(viewUpdateCallBack, viewSelector);
+        }
+    }
+
+    reset(t_1=300000, t_2=300000) {
+
+        clearInterval(this.tickingFunction);
+        this.tickingClock = null
+        this.tickingFunction = null
+
+        this.state = GameState.READY;
+        this.playerTurn = TurnState.WHITE;
+
+        this.white_clock = {
+            time: t_1,
+            move: 0,
+
+            // ### need to include incre
+        };
+        this.black_clock = {
+            time: t_2,
+            move: 0,
+
+            // ### need to include incre
+        };
+    }
+
+    set_timers(t_1, t_2) {
+        this.white_clock.time = t_1;
+        this.black_clock.time = t_2;
+    }
+
+    pause() {
+        /*** Game can be paused only while game is ongoing */
+        if (this.state === GameState.TICKING) {
+            this.state = GameState.PAUSED;
+
+            // stop previous [setInterval] process 
+            clearInterval(this.tickingFunction);
         }
     }
 
     resume(viewUpdateCallBack, viewSelector) {
-        if (this.state === State.PAUSED) {
-            this.state = State.READY;
+        /*** Game can be resumed only while game is paused */
+        if (this.state === GameState.PAUSED) {
+            this.state = GameState.READY;
 
+            // start a new [setInterval] process
             this.start(viewUpdateCallBack, viewSelector);
         }
-    }
-
-    switchTurn(viewUpdateCallBack, viewSelector) {
-        if (this.state === State.TICKING) {
-            const currentPlayer = this.playerTurn === PlayerTurn.White ? this.white_status : this.black_status;
-            currentPlayer.move++;
-
-            this.playerTurn = this.playerTurn === PlayerTurn.White ? PlayerTurn.Black : PlayerTurn.White;
-            
-            clearInterval(this.interval);
-
-            this.start(viewUpdateCallBack, viewSelector);
-        }
-    }
-
-    reset(t_1=90000, t_2=90000) {
-
-        this.state = State.READY;
-        this.playerTurn = PlayerTurn.White;
-
-        this.white_status = {
-            time: t_1,
-            move: 0,
-        };
-        this.black_status = {
-            time: t_2,
-            move: 0,
-        };
-
-        clearInterval(this.interval);
-    }
-
-    set_timers(t_1, t_2) {
-        this.white_status.time = t_1;
-        this.black_status.time = t_2;
     }
 }
 // -------------
